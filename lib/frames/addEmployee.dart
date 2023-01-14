@@ -2,18 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Employee extends StatefulWidget {
-  final int? count;
-  const Employee({Key? key,this.count}) : super(key: key);
+  const Employee({Key? key}) : super(key: key);
 
   @override
-  State<Employee> createState() => _EmployeeState(idCount: count);
+  State<Employee> createState() => _EmployeeState();
 }
 
 class _EmployeeState extends State<Employee> {
   final nameController = TextEditingController();
   final salaryController = TextEditingController();
- int? idCount;
-  _EmployeeState({this.idCount});
+  final allowanceController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,11 +36,20 @@ class _EmployeeState extends State<Employee> {
                 hintText: 'Enter Salary'),
           ),
           const SizedBox(height: 20),
+          TextField(
+            controller: allowanceController,
+            decoration: const InputDecoration(
+                border: InputBorder.none,
+                labelText: 'Allowance',
+                hintText: 'Enter Allowance'),
+          ),
+          const SizedBox(height: 20),
           ElevatedButton(
               onPressed: () {
                 final name = nameController.text;
                 final salary = int.parse(salaryController.text);
-                addEmployee(name, salary);
+                final allowance = int.parse(allowanceController.text);
+                addEmployee(name, salary, allowance);
                 Navigator.pop(context);
               },
               child: const Text("Add"))
@@ -50,10 +58,9 @@ class _EmployeeState extends State<Employee> {
     );
   }
 
-  Future addEmployee(String name, int salary) async {
-    String id = 'id-${idCount!+1}';
-    final employee = FirebaseFirestore.instance.collection('employee').doc(id);
-    final json = {'id': id, 'name': name, 'salary': salary, 'allowance': 0};
+  Future addEmployee(String name, int salary, int allowance) async {
+    final employee = FirebaseFirestore.instance.collection('employee').doc();
+    final json = {'name': name, 'salary': salary, 'allowance': allowance};
     await employee.set(json);
   }
 }

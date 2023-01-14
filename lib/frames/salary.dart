@@ -13,7 +13,7 @@ class _SalaryState extends State<Salary> {
   CollectionReference employee =
       FirebaseFirestore.instance.collection('employee');
   List<String> docId = [];
-
+  final textFieldController = TextEditingController();
   @override
   void initState() {
     // TODO: implement initState
@@ -23,12 +23,15 @@ class _SalaryState extends State<Salary> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.refresh),
-          onPressed: () {setState(() {
-            docId=[];
-          });},
+          onPressed: () {
+            setState(() {
+              docId = [];
+            });
+          },
         ),
       ),
       body: FutureBuilder(
@@ -37,19 +40,13 @@ class _SalaryState extends State<Salary> {
           return ListView.builder(
               itemCount: docId.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: getName(context, docId[index]),
-                );
+                return getListTile(context, docId[index], index);
               });
         },
       ),
       floatingActionButton: FloatingActionButton(onPressed: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Employee(
-                      count: docId.length,
-                    )));
+            context, MaterialPageRoute(builder: (context) => const Employee()));
       }),
     );
   }
@@ -60,25 +57,116 @@ class _SalaryState extends State<Salary> {
         }));
   }
 
-  getName(BuildContext context, String document) {
+  Future<String?> displayTextInputDialog(BuildContext context) async {
+    return showDialog<String>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Enter Allowance'),
+            content: TextField(
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              controller: textFieldController,
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(textFieldController.text);
+                    textFieldController.clear();
+                  },
+                  child: const Text('Add'))
+            ],
+          );
+        });
+  }
+
+  Future<String?> deleteUser(BuildContext context) async {
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Delete Employee'),
+        content: const Text('Are you sure?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Cancel'),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  getListTile(BuildContext context, String document, int index) {
     return FutureBuilder<DocumentSnapshot>(
         future: employee.doc(document).get(),
         builder: ((context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             Map<String, dynamic> data =
                 snapshot.data!.data() as Map<String, dynamic>;
-            return Row(
-              children: [
-                Text(data['name']),
-                const SizedBox(
-                  width: 10,
+            return Container(
+              margin: const EdgeInsets.only(bottom: 3, left: 10, right: 10),
+              child: ListTile(
+                onTap: () async {
+                  final allowanceVal = await displayTextInputDialog(context);
+                  if (allowanceVal!.isNotEmpty) {
+                    final docUser = employee.doc(document);
+                    docUser.update({
+                      'allowance': data['allowance']+int.parse(allowanceVal),
+                    });
+                    setState(() {
+                      docId = [];
+                    });
+                  }
+                },
+                tileColor: Colors.white,
+                trailing: IconButton(
+                    onPressed: () async {
+                      final decision = await deleteUser(context);
+                      if (decision == 'OK') {
+                        final docUser = employee.doc(document);
+                        docUser.delete();
+                        setState(() {
+                          docId = [];
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.delete)),
+                title: Row(
+                  children: [
+                    Text(
+                      data['name'],
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      (data['salary'] - data['allowance']).toString(),
+                      style: const TextStyle(color: Colors.green, fontSize: 20),
+                    ),
+                  ],
                 ),
-                Text(data['salary'].toString()),
-                const SizedBox(
-                  width: 10,
+                leading: Text((++index).toString()),
+                subtitle: Row(
+                  children: [
+                    Text(
+                      data['salary'].toString(),
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      data['allowance'].toString(),
+                      style: const TextStyle(color: Colors.red, fontSize: 20),
+                    ),
+                  ],
                 ),
-                Text(data['allowance'].toString()),
-              ],
+              ),
             );
           }
           return const Text('loading');
