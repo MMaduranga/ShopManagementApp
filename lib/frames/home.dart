@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop_manager/frames/salary.dart';
+import 'package:shop_manager/frames/stock.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
@@ -8,18 +9,60 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: Center(
-            child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+          child: ListView(
         children: [
-            TextButton(onPressed: () {
-              Navigator.push(context,MaterialPageRoute(builder: (context) => const Salary()));
-            }, child: const Text("Salary")),
-            TextButton(onPressed: () {}, child: const Text("Stock")),
-            TextButton(onPressed: () {}, child: const Text("Salary"))
+          const SizedBox(height: 20,),
+          Container(
+            margin: const EdgeInsets.only(bottom: 20,left: 10,right: 10),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius:const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  topRight: Radius.circular(20)),
+              color: Colors.lightBlue.shade100,
+            ),
+            child: ListTile(
+              title: const Center(child: Text("Salary")),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Salary()));
+              },
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(bottom: 20,left: 10,right: 10),
+            decoration: BoxDecoration(
+              border: Border.all(),
+                borderRadius:const BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+            color: Colors.lightBlue.shade100,
+            ),
+            child: ListTile(
+              title: const Center(child: Text("Stock")),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Stock()));
+              },
+            ),
+          ),
         ],
-      ),
-          )),
+      )),
     );
   }
 }
+// Column(
+// mainAxisAlignment: MainAxisAlignment.center,
+// children: [
+// TextButton(
+
+// child: ),
+// TextButton(
+// onPressed: () {
+// Navigator.push(context,
+// MaterialPageRoute(builder: (context) => const Stock()));
+// },
+// child: const Text("Stock")),
+// TextButton(onPressed: () {}, child: const Text("Salary"))
+// ],
+// ),
