@@ -23,7 +23,7 @@ class _SalaryState extends State<Salary> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade300,
+
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.refresh),
