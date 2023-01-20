@@ -13,7 +13,7 @@ class Stock extends StatefulWidget {
 class _StockState extends State<Stock> {
   CollectionReference stock = FirebaseFirestore.instance.collection('stock');
   List<String> docId = [];
-
+  List<String> docItemName = [];
   Future getItem() async {
     await stock.get().then((snapshot) => snapshot.docs.forEach((document) {
           docId.add(document.reference.id);
@@ -45,7 +45,17 @@ class _StockState extends State<Stock> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => const Item()));
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Item(
+                        itemName: '',
+                        bPrice: '',
+                        sPrice: '',
+                        quantity: '',
+                        date: '',
+                        docItemName: docItemName,
+                        document: '',
+                      )));
         },
         child: const Icon(Icons.add),
       ),
@@ -59,55 +69,104 @@ class _StockState extends State<Stock> {
           if (snapshot.connectionState == ConnectionState.done) {
             Map<String, dynamic> data =
                 snapshot.data!.data() as Map<String, dynamic>;
+            docItemName.add(data['item']);
             return Container(
               decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius:const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.4),
+                    spreadRadius: 2,
+                    blurRadius: 2,
+                    offset: const Offset(0, 2), // changes position of shadow
+                  ),
+                ],
               ),
               margin:
-                  const EdgeInsets.only(bottom: 2, left: 10, right: 10, top: 2),
+                  const EdgeInsets.only( left: 10, right: 10, top: 4),
               child: ListTile(
-                onTap: () async {},
+                onTap: () {},
                 tileColor: Colors.white,
                 trailing: IconButton(
-                    onPressed: () async {}, icon: const Icon(Icons.edit)),
+                    onPressed: () async {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Item(
+                                    itemName: data['item'],
+                                    bPrice: data['buyPrice'].toString(),
+                                    sPrice: data['sellPrice'].toString(),
+                                    quantity: data['qty'].toString(),
+                                    date: data['purDate'].toDate().toString(),
+                                    docItemName: docItemName,
+                                    document: docId[index],
+                                  )));
+                    },
+                    icon: const Icon(Icons.edit)),
                 title: Text(
                   data['item'],
-                  style: const TextStyle(fontSize: 20),
+                  style: const TextStyle(
+                      fontSize: 25,
+                      fontFamily: 'Mechanical'),
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
+                        const Text(
+                          'Quantity : ',
+                          style:
+                          TextStyle(color: Colors.grey, fontSize: 15),
+                        ),
                         Text(
                           data['qty'].toString(),
                           style: const TextStyle(
                               color: Colors.green, fontSize: 20),
                         ),
-                        const SizedBox(
-                          width: 100,
-                        ),
-                        Text(
-                          getDate(data['purDate'].toDate()),
-                          style: const TextStyle(fontSize: 15),
-                        ),
                       ],
                     ),
-                    Row(
+                    Column(
                       children: [
-                        Text(
-                          'B:${data['buyPrice'].toString()}',
-                          style: const TextStyle(fontSize: 18),
+                        Row(
+                          children: [
+                            const Text(
+                              'Purchased Date : ',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 15),
+                            ),
+                            Text(
+                              getDate(data['purDate'].toDate()),
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          width: 10,
+                        Row(
+                          children: [
+                            const Text(
+                              'Buying Price : ',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 15),
+                            ),
+                            Text(
+                              data['buyPrice'].toString(),
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ],
                         ),
-                        Text(
-                          'S:${data['sellPrice'].toString()}',
-                          style: const TextStyle(fontSize: 18),
+                        Row(
+                          children: [
+                            const Text(
+                              'Selling Price : ',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 15),
+                            ),
+                            Text(
+                              data['sellPrice'].toString(),
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ],
                         ),
                       ],
                     ),

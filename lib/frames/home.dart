@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:shop_manager/frames/salary.dart';
 import 'package:shop_manager/frames/stock.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  Color tapColor = Colors.white;
 
   @override
   Widget build(BuildContext context) {
@@ -11,18 +18,63 @@ class Home extends StatelessWidget {
       body: SafeArea(
           child: ListView(
         children: [
-          const SizedBox(height: 20,),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.10,
+          ),
           Container(
-            margin: const EdgeInsets.only(bottom: 20,left: 10,right: 10),
+            height: MediaQuery.of(context).size.height * 0.4,
+            child: Image.asset('assets/horse-removebg-preview.png'),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.05,
+          ),
+           Center(
+              child: Text(
+            "Gamini Motors",
+            style: TextStyle(
+              shadows: [Shadow(
+                color: Colors.blue.withOpacity(0.4),
+                offset: const Offset(10, 7),
+                blurRadius: 7,
+              )],
+                color: Colors.blue,
+                fontSize: 70,
+                fontFamily: 'Mechanical',
+                fontWeight: FontWeight.bold),
+          )),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.05,
+          ),
+          Container(
+            margin: const EdgeInsets.only(bottom: 40, left: 80, right: 80),
             decoration: BoxDecoration(
-              border: Border.all(),
-              borderRadius:const BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  topRight: Radius.circular(20)),
-              color: Colors.lightBlue.shade100,
+              borderRadius: const BorderRadius.all(Radius.circular(30)),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.withOpacity(0.5),
+                  spreadRadius: 4,
+                  blurRadius: 7,
+                  offset: const Offset(0, 5), // changes position of shadow
+                ),
+              ],
             ),
             child: ListTile(
-              title: const Center(child: Text("Salary")),
+              title:  Row(
+                children:  [
+                  const Icon(Icons.attach_money,color: Colors.blue,size: 30,),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.1,
+                  ),
+                  const Text(
+                    "Salary",
+                    style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 30,
+                        fontFamily: 'Mechanical'),
+                  ),
+                ],
+              ),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const Salary()));
@@ -30,16 +82,35 @@ class Home extends StatelessWidget {
             ),
           ),
           Container(
-            margin: const EdgeInsets.only(bottom: 20,left: 10,right: 10),
+            margin: const EdgeInsets.only(bottom: 40, left: 80, right: 80),
             decoration: BoxDecoration(
-              border: Border.all(),
-                borderRadius:const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
-            color: Colors.lightBlue.shade100,
+              borderRadius: const BorderRadius.all(Radius.circular(30)),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.withOpacity(0.5),
+                  spreadRadius: 4,
+                  blurRadius: 10,
+                  offset: const Offset(0, 5), // changes position of shadow
+                ),
+              ],
             ),
             child: ListTile(
-              title: const Center(child: Text("Stock")),
+              title: Row(
+                children:  [
+                  const Icon(Icons.motorcycle,color: Colors.blue,size: 30,),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.1,
+                  ),
+                  const Text(
+                    "Stock",
+                    style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 30,
+                        fontFamily: 'Mechanical'),
+                  ),
+                ],
+              ),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const Stock()));
@@ -51,18 +122,3 @@ class Home extends StatelessWidget {
     );
   }
 }
-// Column(
-// mainAxisAlignment: MainAxisAlignment.center,
-// children: [
-// TextButton(
-
-// child: ),
-// TextButton(
-// onPressed: () {
-// Navigator.push(context,
-// MaterialPageRoute(builder: (context) => const Stock()));
-// },
-// child: const Text("Stock")),
-// TextButton(onPressed: () {}, child: const Text("Salary"))
-// ],
-// ),
